@@ -7,6 +7,7 @@ import com.example.logisticsapp.data.Event
 import com.example.logisticsapp.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
 import javax.inject.Inject
@@ -22,6 +23,14 @@ class LogisticViewModel @Inject constructor(
     val inProgress = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
     val popUpNotification = mutableStateOf<Event<String>?>(null)
+
+    init {
+        val currentUser = auth.currentUser
+        signedIn.value = currentUser !=null
+        currentUser?.uid?.let { uid ->
+            getUserData(uid)
+        }
+    }
 
     fun onSignUp(username: String, email: String, password: String){
         inProgress.value = true
@@ -91,7 +100,20 @@ class LogisticViewModel @Inject constructor(
         }
     }
 
-    private fun getUserData(uid: String){}
+    private fun getUserData(uid: String){
+        inProgress.value = true
+        db.collection(USERS).document(uid).get()
+            .addOnSuccessListener {
+                val user = it.toObject<UserData>()
+                userData.value = user
+                inProgress.value = false
+//                popUpNotification.value = Event("User data retrieved successfully")
+            }
+            .addOnFailureListener { exec ->
+                handleException(exec, "Can not retrieve user data..")
+                inProgress.value = false
+            }
+    }
 
     fun handleException(exception: Exception? =null, customMessage: String = ""){
         exception?.printStackTrace()

@@ -1,9 +1,6 @@
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -25,9 +22,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.example.logisticsapp.R
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.logisticsapp.ui.theme.Shapes
+import androidx.compose.foundation.shape.CircleShape
 
 @Composable
 fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
@@ -50,6 +49,7 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
                 .wrapContentHeight()
                 .verticalScroll(rememberScrollState())
                 .background(Color.Transparent),
+
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -58,9 +58,11 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
                 contentDescription = "Logistic Image",
                 modifier = Modifier
                     .width(200.dp)
+                    .height(200.dp)
                     .padding(8.dp)
                     .padding(top = 30.dp)
-                
+                    .clip(CircleShape)
+
             )
             Text(
                 text = "Logistic Company",
@@ -115,6 +117,10 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
                 Text(text = "Already a user? Login here..", color = Color.Blue)
             }
 
+        }
+        val isLoading = vm.inProgress.value
+        if(isLoading){
+            CommonProgressSpinner()
         }
     }
 }
