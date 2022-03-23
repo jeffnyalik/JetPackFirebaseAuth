@@ -1,5 +1,7 @@
 package com.example.logisticsapp
 
+import DashboardScreen
+import LoginScreen
 import NotificationMessage
 import SignUpScreen
 import android.nfc.Tag
@@ -41,6 +43,8 @@ class MainActivity : ComponentActivity() {
 
 sealed class DestinationScreen(val route: String){
     object SignUp: DestinationScreen("signup")
+    object LogIn: DestinationScreen("login")
+    object Dashboard: DestinationScreen("dashboard")
 }
 
 @Composable
@@ -51,6 +55,12 @@ fun logisticApp(){
     NavHost(navController = navController, startDestination = DestinationScreen.SignUp.route){
         composable(DestinationScreen.SignUp.route){
             SignUpScreen(navController = navController, vm = vm)
+        }
+        composable(DestinationScreen.LogIn.route){
+            LoginScreen(navController = navController, vm = vm)
+        }
+        composable(DestinationScreen.Dashboard.route){
+            DashboardScreen(navController = navController, vm = vm)
         }
     }
 }

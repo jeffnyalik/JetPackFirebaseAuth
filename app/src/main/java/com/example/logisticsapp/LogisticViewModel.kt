@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import navigateTo
 import java.lang.Exception
 import javax.inject.Inject
 import kotlin.math.sign
@@ -25,6 +26,7 @@ class LogisticViewModel @Inject constructor(
     val popUpNotification = mutableStateOf<Event<String>?>(null)
 
     init {
+        auth.signOut()
         val currentUser = auth.currentUser
         signedIn.value = currentUser !=null
         currentUser?.uid?.let { uid ->
@@ -33,6 +35,10 @@ class LogisticViewModel @Inject constructor(
     }
 
     fun onSignUp(username: String, email: String, password: String){
+        if(username.isEmpty() or email.isEmpty() or password.isEmpty()){
+            handleException(customMessage = "The fields can not be empty")
+            return
+        }
         inProgress.value = true
         db.collection(USERS).whereEqualTo("email", email).get()
             .addOnSuccessListener { documents ->
@@ -54,6 +60,31 @@ class LogisticViewModel @Inject constructor(
             }
             .addOnFailureListener{
                 //code here
+            }
+    }
+    fun onLogin(email:String, password: String){
+        if(email.isEmpty() or password.isEmpty()){
+            handleException(customMessage = "The fields can not be empty")
+            return
+        }
+        inProgress.value = true
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener{
+                if(it.isSuccessful){
+                    signedIn.value = true
+                    inProgress.value = false
+                    auth.currentUser?.uid?.let { uid->
+                        getUserData(uid)
+                    }
+                    popUpNotification.value = Event("You have Logged in Successfully")
+                }else{
+                    handleException(it.exception, "Login Failed")
+                    inProgress.value = false
+                }
+            }
+            .addOnFailureListener { exec->
+                handleException(exec, "Login Failed")
+                inProgress.value = false
             }
     }
 

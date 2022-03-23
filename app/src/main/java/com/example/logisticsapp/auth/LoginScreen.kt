@@ -1,38 +1,30 @@
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.logisticsapp.LogisticViewModel
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.compose.ui.text.input.TextFieldValue
-import com.example.logisticsapp.R
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import com.example.logisticsapp.ui.theme.Shapes
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.platform.LocalFocusManager
 import com.example.logisticsapp.DestinationScreen
+import com.example.logisticsapp.LogisticViewModel
+import com.example.logisticsapp.R
 
 @Composable
-fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
-    checkSignedIn(navController = navController, vm =vm )
+fun LoginScreen(navController: NavController, vm:LogisticViewModel){
+    checkSignedIn(navController = navController, vm = vm )
     val focus = LocalFocusManager.current
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -40,9 +32,7 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
         val email  = remember {
             mutableStateOf(TextFieldValue())
         }
-        val username = remember {
-            mutableStateOf(TextFieldValue())
-        }
+
         val password = remember {
             mutableStateOf(TextFieldValue())
         }
@@ -56,32 +46,23 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.logistics),
-                contentDescription = "Logistic Image",
-                modifier = Modifier
-                    .width(200.dp)
-                    .height(200.dp)
-                    .padding(8.dp)
-                    .padding(top = 30.dp)
-                    .clip(CircleShape)
-
-            )
+            ImageBox(shape = CircleShape)
+//            Image(
+//                painter = painterResource(id = R.drawable.logistics),
+//                contentDescription = "Logistic Image",
+//                modifier = Modifier
+//                    .width(180.dp)
+//                    .height(180.dp)
+//                    .padding(top = 30.dp)
+//                    .clip(CircleShape)
+//
+//            )
             Text(
                 text = "Logistic Company",
                 fontFamily = FontFamily.SansSerif,
                 fontSize = 20.sp,
-                color = Color.Green,
+                color = Color.Black,
                 modifier = Modifier.padding(8.dp)
-            )
-
-            OutlinedTextField(
-                value = username.value, onValueChange = {username.value=it},
-                label = {Text("Username")},
-                singleLine = true,
-                placeholder = {Text("user18239")},
-                modifier = Modifier.padding(2.dp)
             )
 
             OutlinedTextField(
@@ -101,12 +82,8 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
             )
             Button(
                 onClick = {
-                    focus.clearFocus(force =true)
-                     vm.onSignUp(
-                         username.value.text,
-                         email.value.text,
-                         password.value.text
-                     )
+                    focus.clearFocus(force = true)
+                    vm.onLogin(email.value.text, password.value.text)
 
                 },
                 modifier = Modifier
@@ -114,14 +91,14 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
                     .padding(all = 35.dp),
                 shape = MaterialTheme.shapes.large
             ) {
-                Text(text = "Register")
+                Text(text = "Login")
             }
             TextButton(
                 onClick = {
-                    navigateTo(navController, DestinationScreen.LogIn)
+                    navigateTo(navController, DestinationScreen.SignUp)
                 },
             ) {
-                Text(text = "Already a user? Login here..", color = Color.Blue)
+                Text(text = "Not a member? SignUp here..", color = Color.Blue)
             }
 
         }
@@ -129,5 +106,20 @@ fun SignUpScreen(navController: NavController, vm: LogisticViewModel){
         if(isLoading){
             CommonProgressSpinner()
         }
+    }
+}
+
+@Composable
+fun ImageBox(shape: Shape){
+    Column(modifier= Modifier
+        .fillMaxWidth()
+        .wrapContentSize(Alignment.Center)) {
+        Image(
+            painter = painterResource(id = R.drawable.logistics),
+            contentDescription = "My Image",
+            modifier = Modifier
+                .size(200.dp)
+                .clip(shape)
+        )
     }
 }
